@@ -11,8 +11,8 @@ def parse_event(e):
 	else:
 		return int(re.search(r'\d+', e).group())
 
-events = sorted([(datetime.strptime(re.search(r'\[.+\]', x).group().strip('[]'), '%Y-%m-%d %H:%M'), parse_event(' '.join(x.split()[2:]))) for x in logs], key=lambda y: y[0])
 
+events = sorted([(datetime.strptime(re.search(r'\[.+\]', x).group().strip('[]'), '%Y-%m-%d %H:%M'), parse_event(' '.join(x.split()[2:]))) for x in logs], key=lambda y: y[0])
 for e in events:
 	print(e[0], e[1])
 	
