@@ -13,7 +13,7 @@ max_y = sorted(points, key=lambda x: x[1])[-1][1]
 
 print(min_x, max_x, min_y, max_y)
 
-grid = [[0]*(max_y - min_y)]*(max_x - min_x)
+grid = [[0] * (max_x - min_x) for i in range(max_y - min_y)]
 
 for y in range(len(grid)):
 	for x in range(len(grid[0])):
@@ -30,9 +30,10 @@ for y in range(len(grid)):
 			elif distance(xval, yval, p[0], p[1]) == min_distance:
 				index = -1
 		#print("Setting index to ", index)
-		print("updating ", yval-min_y, xval - min_x)
+		#print("updating ", yval-min_y, xval - min_x)
 		grid[yval-min_y][xval-min_x] = index
+		#print(grid)
 	
-
+print(grid)
 for g in grid:
 	print("".join(list(map(lambda x: chr(ord('a') + x), g))))
