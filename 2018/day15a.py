@@ -8,6 +8,8 @@ grid = [list(x.rstrip()) for x in open('day15input.txt', 'r')]
 #grid = [list(x.rstrip()) for x in open('day15test4.txt', 'r')]
 #grid = [list(x.rstrip()) for x in open('day15test5.txt', 'r')]
 #grid = [list(x.rstrip()) for x in open('day15test6.txt', 'r')] #failing!
+#grid = [list(x.rstrip()) for x in open('15.inp', 'r')]
+#grid = [list(x.rstrip()) for x in open('bizarre_edge_case.txt', 'r')]
 
 #grid = np.zeros((len(text), len(text[0])), dtype="char")
 
@@ -29,7 +31,7 @@ def get_adjacent_empty_spaces(p):
             to_return.append(n)
     return to_return
 
-def print_grid(g):
+def print_grid(g, format_like_aoc):
     global goblins
     global elves
     global walls
@@ -50,7 +52,8 @@ def print_grid(g):
             else:
                 char = "."
             print(char, end="")
-        print (" " + ",".join(goblins_to_print) + " " + ",".join(elves_to_print), end="")
+        if format_like_aoc:
+            print (" " + ",".join(goblins_to_print) + " " + ",".join(elves_to_print), end="")
         print("")
 
 def get_squares_in_range(p, s):
@@ -159,6 +162,9 @@ for j in range(len(grid)):
             goblins[(i, j)] = 200
         elif grid[j][i] == 'E':
             elves[(i,j)] = 200
+        #TODO REMOVE
+        #if (i,j) == (19, 11):
+        #    elves[(i,j)] = 2
 
 
 #print(get_squares_in_range((8, 11)))
@@ -168,29 +174,36 @@ for j in range(len(grid)):
 
 #print(a_star((8, 20), (8, 22)))
 #print(a_star((23,22), (26,22)))
-print_grid(grid)
 k = 0
+
 while True:
-    print("round ", k + 1)
-    if len(goblins) == 0 or len(elves) == 0:
-        print("COMBAT IS OVER")
-        total_hp = 0
-        if len(goblins) == 0:
-            for e in elves.values():
-                total_hp += e
-        else:
-            for g in goblins.values():
-                total_hp += g
-        print (k-1, "*", total_hp)
-        print((k-1) * total_hp)
-        break
-    units = sorted(list(goblins.keys()) + list(elves.keys()), key=lambda element: (element[1], element[0]))
+
+    print(str(k) + "\t" + str(len(goblins)) + "\t" + str(len(elves)))
+    print_grid(grid, False)
+    units = []
+    for u in sorted(list(goblins.keys()) + list(elves.keys()), key=lambda element: (element[1], element[0])):
+        if u in goblins.keys():
+            units.append((u, "G"))
+        elif u in elves.keys():
+            units.append((u, "E"))
+    for unit in units:
+        hp = -1
+        if unit[0] in goblins.keys():
+            hp = goblins[unit[0]]
+        elif unit[0] in elves.keys():
+            hp = elves[unit[0]]
+        #print(unit)
+        print("start\t"+str(unit[0][0] + 1)+"\t"+str(unit[0][1] + 1)+"\t"+unit[1]+"\t"+str(hp))
+
+    #print("round ", k + 1)
+    #units = sorted(list(goblins.keys()) + list(elves.keys()), key=lambda element: (element[1], element[0]))
+    
     for i in range(len(units)):
-        unit = units[i]
+        unit = units[i][0]
         enemy_dict = {}
-        if unit in goblins.keys():
+        if unit in goblins.keys() and units[i][1] == "G":
             enemy_dict = elves
-        elif unit in elves.keys():
+        elif unit in elves.keys() and units[i][1] == "E":
             enemy_dict = goblins
         else:
             continue
@@ -219,17 +232,16 @@ while True:
                                 fewest_steps = steps
                                 goals.append(s)
                                 goal_paths[s] = shortest_path
-            if len(goals) == 0:
-                continue
-            moved = True
-            goal = sorted(goals, key=lambda e: (e[1], e[0]))[0]
-            new_position = goal_paths[goal][-1]
-            if unit in goblins.keys():
-                goblins[new_position] = goblins[unit]
-                del goblins[unit]
-            else:
-                elves[new_position] = elves[unit]
-                del elves[unit]
+            if len(goals) != 0:
+                moved = True
+                goal = sorted(goals, key=lambda e: (e[1], e[0]))[0]
+                new_position = goal_paths[goal][-1]
+                if unit in goblins.keys():
+                    goblins[new_position] = goblins[unit]
+                    del goblins[unit]
+                else:
+                    elves[new_position] = elves[unit]
+                    del elves[unit]
         if moved:
             unit = new_position
         #attack
@@ -243,11 +255,40 @@ while True:
         if target != (-1, -1):
             enemy_dict[target] -= 3
             if enemy_dict[target] <= 0:
+                got_one = True
+                print("got one")
                 del enemy_dict[target]
-                if i == len(units) - 1:
-                    print("Killed on last hit, add one")
-    k += 1
+    if len(goblins) == 0 or len(elves) == 0:
+        print("COMBAT IS OVER")
+        total_hp = 0
+        if len(goblins) == 0:
+            for e in elves.values():
+                total_hp += e
+        else:
+            for g in goblins.values():
+                total_hp += g
+        print (k, "*", total_hp)
+        print((k) * total_hp)
+        break
+    else:
+        k += 1
 
-    print_grid(grid)
+                #if i == len(units) - 1:
+                #    print("Killed on last hit, add one")
+    #print_grid(grid, False)
+    #units = sorted(list(goblins.keys()) + list(elves.keys()), key=lambda element: (element[1], element[0]))
+    # for unit in units:
+    #     unit_type = ""
+    #     hp = -1
+    #     if unit in goblins.keys():
+    #         unit_type = "G"
+    #         hp = goblins[unit]
+    #     elif unit in elves.keys():
+    #         unit_type = "E"
+    #         hp = elves[unit]
+    #     else:
+    #         unit_type = "!!!!!" 
+    #     print("start\t" + str(unit[0] + 1) + "\t" + str(unit[1] + 1) + "\t" + unit_type + "\t" + str(hp))
+
     #print(goblins)
     #print(elves)
