@@ -1,9 +1,9 @@
 #import numpy as np
 from collections import defaultdict
 import itertools
-#grid = [list(x.rstrip()) for x in open('day15input.txt', 'r')]
+grid = [list(x.rstrip()) for x in open('day15input.txt', 'r')]
 #grid = [list(x.rstrip()) for x in open('day15test.txt', 'r')]
-grid = [list(x.rstrip()) for x in open('day15test2.txt', 'r')]
+#grid = [list(x.rstrip()) for x in open('day15test2.txt', 'r')]
 #grid = [list(x.rstrip()) for x in open('day15test3.txt', 'r')]
 #grid = [list(x.rstrip()) for x in open('day15test4.txt', 'r')]
 #grid = [list(x.rstrip()) for x in open('day15test5.txt', 'r')]
@@ -273,20 +273,20 @@ def run_simulation(attack_power):
         if len(goblins) == 0 or len(elves) == 0:
             print("COMBAT IS OVER")
             total_hp = 0
-            retval = -1
             if len(goblins) == 0:
                 print("ELVES WIN")
                 for e in elves.values():
                     total_hp += e
-                retval = 0
             else:
                 print("GOBLINS WIN")
                 for g in goblins.values():
                     total_hp += g
-                retval = 1
             print (k, "*", total_hp)
             print((k) * total_hp)
-            return retval
+            if len(elves) == 10:
+                return 0
+            else:
+                return 1
         else:
             k += 1
 
