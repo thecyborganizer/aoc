@@ -10,7 +10,8 @@ text = [x.rstrip() for x in open('day17input.txt', 'r')]
 #text = text = [x.rstrip() for x in open('day17test.txt', 'r')]
 clay = []
 
-dirs = [np.array([0,1]), np.array([1, 0]), np.array([-1, 0]), np.array([0, -1])]
+#dirs = [np.array([0,1]), np.array([1, 0]), np.array([-1, 0]), np.array([0, -1])]
+dirs = [(0,1), (1,0), (-1,0), (0, -1)]
 
 min_y = 9999999999999999
 max_y = -9999999999999999
@@ -34,6 +35,7 @@ max_y = sorted_y[-1][1]
 #print(min_x, min_y, max_x, max_y)
 
 grid = np.full((max_y+1, max_x+2), ".", dtype='str')
+
 grid[0, 500] = "+"
 for c in clay:
     grid[c[1], c[0]] = "#"
@@ -48,47 +50,38 @@ def step(water):
     for drop in water:
         possibilities = []
         found = False
-        for d in dirs[0:1]:
-            new_loc = drop + d
-            if new_loc[1] >= grid.shape[0]:
-                grid[drop[1], drop[0]] = "|"
-                found = True
-                break
-            if grid[new_loc[1], new_loc[0]] == ".":
-                #grid[drop[1], drop[0]] = "|"
-                possibilities.insert(0, new_loc)
-                found = True
-                break
-            if grid[new_loc[1], new_loc[0]] == "|":
-                found = True
-                #grid[drop[1], drop[0]] = "|"
-                possibilities.append(new_loc)
-                break
+        out_of_bounds = False
+        new_loc = (drop[0], drop[1] + 1)
+        if new_loc[1] >= grid.shape[0]:
+            grid[drop[1], drop[0]] = "|"
+            found = True
+            out_of_bounds = True
+        elif grid[new_loc[1], new_loc[0]] == "." or grid[new_loc[1], new_loc[0]] == "|":
+            found = True            
 
         if not found:
-            for d in dirs[1:3]:
-                new_loc = drop + d
-                if new_loc[1] >= grid.shape[0]:
-                    grid[drop[1], drop[0]] = "|"
-                    found = True
-                    break
+            dirs = [(-1, 0), (1, 0)]
+            #if random.random() <= 0.5:
+            #    dirs.reverse()
+            for d in dirs:
+                new_loc = (drop[0] + d[0], drop[1] + d[1])
                 if grid[new_loc[1], new_loc[0]] == ".":
                     #grid[drop[1], drop[0]] = "|"
-                    possibilities.insert(0, new_loc)
+                    
                     found = True
-                    #break
-                if grid[new_loc[1], new_loc[0]] == "|":
-                    found = True
-                    #grid[drop[1], drop[0]] = "|"
-                    possibilities.append(new_loc)
-                    #break
-        if found and len(possibilities) > 0:
+                    break
+            if not found:
+                for d in dirs:
+                    if grid[new_loc[1], new_loc[0]] == "|":
+                        #grid[drop[1], drop[0]] = "|"
+                        found = True
+                        break
+        if found and not out_of_bounds:
             grid[drop[1], drop[0]] = "|"
-            new_loc = possibilities[0]
             next_water.append(new_loc)
             grid[new_loc[1], new_loc[0]] = "~"
 
-        if not found:
+        else:
             row = grid[drop[1], :]
             index = drop[0]
             next_wall = -1
@@ -110,9 +103,9 @@ def compare(a1, a2):
     if a1[1] > a2[1]:
         return True
     elif a1[1] == a2[1]:
-        if a1[0] > a2[0]:
+        if a1[0] < a2[0]:
             return True
-        elif a1[0] <= a2[0]:
+        elif a1[0] >= a2[0]:
             return False
     else:
         return False
@@ -122,14 +115,13 @@ water = []
 last_tildes = -1
 last_bars = -1
 count = 0
-while True:
+for i in range(1000):
     count += 1
     next_water = step(water)
-    next_water.append(np.array([500, 0]))
+    next_water.append((500, 0))
     grid[0, 500] = "~"
-    if np.array_equal(water, next_water):
-        break
-    water = sorted(next_water, key=functools.cmp_to_key(compare))
+    water = sorted(next_water, key=lambda x: (x[1], x[0]), reverse=True)
+    #water = sorted(next_water, key=)
     if count % 100 == 0:
         print(count)
 
