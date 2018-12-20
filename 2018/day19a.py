@@ -72,9 +72,11 @@ program = [[x.split()[0]] + list(map(lambda y: int(y), re.findall(r'-?\d+', x)))
 
 ip = 0
 count = 0
+rs[0] = 1
 while ip >= 0 and ip < len(program):
     count += 1
-    print(count, rs)
+    if count % 10000 == 0:
+        print(count, rs)
     rs[ip_register] = ip
     
     apply_instruction(program[rs[ip_register]], rs)
