@@ -19,9 +19,13 @@ class planet:
         return ",".join([str(self.x), str(self.y), str(self.z)]) + ":" + ",".join([str(self.vx), str(self.vy), str(self.vz)])
 
 
-    def update_position(self):
+    def update_position_x(self):
         self.x += self.vx
+    
+    def update_position_y(self):
         self.y += self.vy
+    
+    def update_position_z(self):
         self.z += self.vz
 
     def energy(self):
@@ -29,66 +33,91 @@ class planet:
         kinetic = abs(self.vx) + abs(self.vy) + abs(self.vz)
         return potential * kinetic
 
+    def key_x(self):
+        return (self.x, self.vx)
+    def key_y(self):
+        return (self.y, self.vy)
+    def key_z(self):
+        return (self.z, self.vz)
+
     def key(self):
-        return [self.x, self.y, self.z, self.vx, self.vy, self.vz]
+        return (self.x, self.y, self.z, self.vx, self.vy, self.vz)
 
-def apply_gravity(m1, m2):
-        if m1.x < m2.x:
-            m1.vx += 1
-            m2.vx -= 1
-        elif m1.x > m2.x:
-            m1.vx -= 1
-            m2.vx += 1
+def apply_gravity_x(m1, m2):
+    if m1.x < m2.x:
+        m1.vx += 1
+        m2.vx -= 1
+    elif m1.x > m2.x:
+        m1.vx -= 1
+        m2.vx += 1
 
-        if m1.y < m2.y:
-            m1.vy += 1
-            m2.vy -= 1
-        elif m1.y > m2.y:
-            m1.vy -= 1
-            m2.vy += 1
+def apply_gravity_y(m1, m2):
+    if m1.y < m2.y:
+        m1.vy += 1
+        m2.vy -= 1
+    elif m1.y > m2.y:
+        m1.vy -= 1
+        m2.vy += 1
         
-        if m1.z < m2.z:
-            m1.vz += 1
-            m2.vz -= 1
-        elif m1.z > m2.z:
-            m1.vz -= 1
-            m2.vz += 1
+def apply_gravity_z(m1, m2):
+    if m1.z < m2.z:
+        m1.vz += 1
+        m2.vz -= 1
+    elif m1.z > m2.z:
+        m1.vz -= 1
+        m2.vz += 1
 
 
 #with open("12test.txt") as f:
-#with open("12test2.txt") as f:
-with open("12input.txt") as f:
+with open("12test2.txt") as f:
+#with open("12input.txt") as f:
     moons = [planet(tuple(re.findall('-*[0-9]+', x))) for x in f.readlines()]
 
-time = 0
 
 combos = []
 for ms in itertools.combinations(moons, 2):
     combos.append(ms)
 
-sorted_x = sorted(ms, key = lambda m: m.x)
-sorted_y = sorted(ms, key = lambda m: m.y)
-sorted_z = sorted(ms, key = lambda m: m.z)
-
+startx = moons[0].key_x() + moons[1].key_x() + moons[2].key_x() + moons[3].key_x()
+x_time = 0
 while True:
-    key = []
-
-    for m in sorted_x:
-        
+    for c in combos:
+        apply_gravity_x(c[0], c[1])
 
     for m in moons:
-        m.update_position()
-        key.extend(m.key())
-    key_t = tuple(key)
-    if key_t in seen:
+        m.update_position_x()
+    state = moons[0].key_x() + moons[1].key_x() + moons[2].key_x() + moons[3].key_x()
+    x_time += 1
+    if state == startx:
         break
-    seen.add(key_t)
-    time += 1
-    if time % 10000 == 0:
-        print(time)
 
-print(time)
+starty = moons[0].key_y() + moons[1].key_y() + moons[2].key_y() + moons[3].key_y()
+y_time = 0
+while True:
+    for c in combos:
+        apply_gravity_y(c[0], c[1])
 
+    for m in moons:
+        m.update_position_y()
+    state = moons[0].key_y() + moons[1].key_y() + moons[2].key_y() + moons[3].key_y()
+    y_time += 1
+    if state == starty:
+        break
+
+startz = moons[0].key_z() + moons[1].key_z() + moons[2].key_z() + moons[3].key_z()
+z_time = 0
+while True:
+    for c in combos:
+        apply_gravity_z(c[0], c[1])
+
+    for m in moons:
+        m.update_position_z()
+    state = moons[0].key_z() + moons[1].key_z() + moons[2].key_z() + moons[3].key_z()
+    z_time += 1
+    if state == startz:
+        break
+print(x_time*y_time*z_time)
+print(numpy.lcm.reduce([x_time, y_time, z_time]))
 # energy = 0
 # for m in moons:
 #     energy += m.energy()
