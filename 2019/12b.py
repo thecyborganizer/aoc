@@ -116,7 +116,7 @@ while True:
     z_time += 1
     if state == startz:
         break
-print(x_time*y_time*z_time)
+#print(x_time*y_time*z_time)
 print(numpy.lcm.reduce([x_time, y_time, z_time]))
 # energy = 0
 # for m in moons:
