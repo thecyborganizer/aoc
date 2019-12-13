@@ -1,10 +1,14 @@
 import re
 import itertools
 import numpy
+import math
 
 moons = []
 
 seen = set()
+
+def lcm(a,b): 
+    return abs(a * b) // math.gcd(a,b)
 
 class planet:
 
@@ -69,8 +73,8 @@ def apply_gravity_z(m1, m2):
 
 
 #with open("12test.txt") as f:
-with open("12test2.txt") as f:
-#with open("12input.txt") as f:
+#with open("12test2.txt") as f:
+with open("12input.txt") as f:
     moons = [planet(tuple(re.findall('-*[0-9]+', x))) for x in f.readlines()]
 
 
@@ -117,7 +121,9 @@ while True:
     if state == startz:
         break
 #print(x_time*y_time*z_time)
-print(numpy.lcm.reduce([x_time, y_time, z_time]))
+for m in moons:
+    print(m)
+print(lcm(lcm(x_time, y_time), lcm(y_time, z_time)))
 # energy = 0
 # for m in moons:
 #     energy += m.energy()
