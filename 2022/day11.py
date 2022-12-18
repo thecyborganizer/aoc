@@ -1,4 +1,6 @@
 import re
+from operator import mul
+from functools import reduce
 
 class monkey:
     number = 0
@@ -7,6 +9,9 @@ class monkey:
     testDivisor = 0
     trueTarget = 0
     falseTarget = 0
+    inspectionCount = 0
+    type = ""
+    itemsAsModuluses = []
 
     def __init__(self, number, items, operation, testDivisor, trueTarget, falseTarget):
         self.number = number
@@ -35,9 +40,24 @@ class monkey:
         return monkey(number, items, operation, testDivisor, trueTarget, falseTarget)
 
 monkeys = []
-with open("day11input.txt") as f:
+with open("day11testinput.txt") as f:
     lines = [x.strip() for x in f.readlines()]
     for i in range(0, len(lines), 7):
         monkeys.append(monkey.parseMonkey(lines[i:i+6]))
-for m in monkeys:
-    print(m)
+moreMonkeys = [m for m in monkeys]
+for r in range(600):
+    for m in monkeys:
+        while len(m.items) > 0:
+            m.inspectionCount = m.inspectionCount + 1
+            item = m.items.pop(0)
+            item = m.operation(item)
+            if item % m.testDivisor == 0:
+                monkeys[m.trueTarget].items.append(item)
+            else:
+                monkeys[m.falseTarget].items.append(item)
+
+monkeys.sort(key=lambda m: m.inspectionCount, reverse=True)
+print([m.inspectionCount for m in monkeys])
+print(reduce(mul, [m.inspectionCount for m in monkeys[0:2]], 1))
+
+monkeys = moreMonkeys
