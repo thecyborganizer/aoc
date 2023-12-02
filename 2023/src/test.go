@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	lines := readline.Readlines("../inputs/test.txt")
+	lines := readline.Readlines("inputs/test.txt")
 	fmt.Println(lines)
 }
