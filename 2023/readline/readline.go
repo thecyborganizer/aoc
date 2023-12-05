@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -24,4 +26,15 @@ func Readlines(filename string) []string {
 		log.Fatal(err)
 	}
 	return output
+}
+
+func GetAllNumbers(s string) []int {
+	re := regexp.MustCompile(`-?\d+`)
+	matches := re.FindAllString(s, -1)
+	var numbers []int
+	for _, match := range matches {
+		val, _ := strconv.Atoi(match)
+		numbers = append(numbers, val)
+	}
+	return numbers
 }
