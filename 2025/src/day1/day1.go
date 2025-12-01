@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"input"
 	"readline"
 	"regexp"
 	"strconv"
 )
 
 func main() {
+	input.GetInputForYearAndDay(2025, 1)
 	lines := readline.Readlines("input.txt")
 	//lines := readline.Readlines("test.txt")
 
