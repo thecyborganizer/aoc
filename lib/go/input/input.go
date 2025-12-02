@@ -12,7 +12,7 @@ func GetInputForYearAndDay(year int, day int) {
 	if _, err := os.Stat("input.txt"); err == nil {
 		return
 	}
-	file, err := os.Open("../cookie.txt")
+	file, err := os.Open("../../../cookie.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
