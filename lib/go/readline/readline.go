@@ -28,6 +28,18 @@ func Readlines(filename string) []string {
 	return output
 }
 
+func ConvertToGrid(lines []string) [][]string {
+	var grid [][]string
+	for _, l := range lines {
+		var row []string
+		for _, r := range l {
+			row = append(row, string(r))
+		}
+		grid = append(grid, row)
+	}
+	return grid
+}
+
 func GetAllNumbers(s string) []int {
 	re := regexp.MustCompile(`-?\d+`)
 	matches := re.FindAllString(s, -1)
